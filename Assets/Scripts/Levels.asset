@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ecc5f48b1117d5a7a2e6a42ebc59301, type: 3}
+  m_Name: Levels
+  m_EditorClassIdentifier: 
+  _levels:
+  - _targetScore: 25
+    _numOfProjectilesToSpawn: 50
+    _image: {fileID: 21300000, guid: 27d972766adbe9317b98181d8fa71207, type: 3}
+    _projectilesFireRateRange: {x: 1.5, y: 3}
+    _projectilesSpeedRange: {x: 3, y: 8}
+  - _targetScore: 50
+    _numOfProjectilesToSpawn: 50
+    _image: {fileID: 21300000, guid: 385b6bb2ede432dccb8a03018f6edbb6, type: 3}
+    _projectilesFireRateRange: {x: 1, y: 2}
+    _projectilesSpeedRange: {x: 4, y: 9}
+  - _targetScore: 75
+    _numOfProjectilesToSpawn: 50
+    _image: {fileID: 21300000, guid: 1ac5935f669abb225809b57b0fa25533, type: 3}
+    _projectilesFireRateRange: {x: 0.5, y: 1.5}
+    _projectilesSpeedRange: {x: 5, y: 10}

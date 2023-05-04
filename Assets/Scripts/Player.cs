@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -7,13 +9,19 @@ public class Player : MonoBehaviour
     [SerializeField] private float _movementSpeed = 10f;
     [SerializeField] private float _padding = 1f;
     [SerializeField] private float _spriteChangeTime = 1f;
-    [SerializeField] private Sprite[] _collectSprites;
+    [SerializeField] private Sprite _collectSprite;
+    [SerializeField] private Sprite[] _winSprites;
+
+    public event Action RewardCollected;
+    public event Action WinAnimationEnded;
+    public event Action LoseAnimationEnded;
 
     private Rigidbody2D _rb;
+    private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private Sprite _defaultSprite;
     private WaitForSeconds _waitForSeconds;
-    private GameManager _gameManager;
+    private Coroutine _changeSpriteCoroutine;
 
     private float _xMin;
     private float _xMax;
@@ -22,15 +30,17 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();                                                                                                                                                                                                                                                                                                                                                           
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _defaultSprite = _spriteRenderer.sprite;
         _waitForSeconds = new WaitForSeconds(_spriteChangeTime);
+        var rnd = new System.Random();
+        _winSprites = _winSprites.OrderBy(x => rnd.Next()).ToArray();
     }
 
 
     private void Start()
     {
-        _gameManager = FindObjectOfType<GameManager>();
         SetUpMovementBoundaries();
     }
 
@@ -67,15 +77,60 @@ public class Player : MonoBehaviour
 
     private void CollectReward()
     {
-        _gameManager.IncreaseScore();
-        StartCoroutine(ChangeSprite());
+        if (_changeSpriteCoroutine != null)
+        {
+            StopCoroutine(_changeSpriteCoroutine);
+        }
+        _changeSpriteCoroutine = StartCoroutine(ChangeSprite());
+        RewardCollected?.Invoke();
     }
 
     private IEnumerator ChangeSprite()
     {
-        var spriteToSwitchTo = _collectSprites[Random.Range(0, _collectSprites.Length)];
-        _spriteRenderer.sprite = spriteToSwitchTo;
+        _spriteRenderer.sprite = _collectSprite;
         yield return _waitForSeconds;
         _spriteRenderer.sprite = _defaultSprite;
+    }
+
+    public void SetWinSprite(int level)
+    {
+        if (_changeSpriteCoroutine != null)
+        {
+            StopCoroutine(_changeSpriteCoroutine);
+        }
+        _spriteRenderer.sprite = _winSprites[level];
+    }
+
+    public void BackToDefaultSprite()
+    {
+        _spriteRenderer.sprite = _defaultSprite;
+        _animator.Play("Idle");
+    }
+
+    public void PlayWinAnimation()
+    {
+        _animator.enabled = true;
+        _animator.Play("Win");
+    }
+
+    public void PlayLoseAnimation()
+    {
+        _animator.enabled = true;
+        _animator.Play("Lose");
+    }
+
+    public void HandleWinAnimationEnded()
+    {
+        WinAnimationEnded?.Invoke();
+    }
+
+    public void HandleLoseAnimationEnded()
+    {
+        LoseAnimationEnded?.Invoke();
+    }
+    
+    public void DisableAnimator()
+    {
+        _animator.enabled = false;
     }
 }
